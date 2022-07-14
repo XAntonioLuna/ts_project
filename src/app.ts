@@ -1,126 +1,98 @@
-// Intersection types
+// Generics
+// const names: Array<string> = [];  // Same as string[]
 
-type Admin = {
-    name: string;
-    privileges: string[];
+// const promise: Promise<string> = new Promise((resolve, reject) => {
+//     setTimeout( () => {
+//         resolve('WTF is this');
+
+//     }, 2000);
+// })
+
+// promise.then(data => {
+//     data.split(' ');
+// })
+
+// Using extends (aka. Constraints) we can limit the types that can
+// be passed successfully to these generic types
+function merge<T extends object, U extends object>(obj1: T, obj2: U){
+    return Object.assign(obj1, obj2);
 }
 
-type Employee = {
-    name: string;
-    startDate: Date;
+const mergeObj = merge({name: 'Antonio', hobbies: ['books']}, {age: 34});
+console.log(mergeObj);
+console.log(mergeObj.age);
+
+interface Lengthy {
+    length: number;
 }
 
-type ElevatedEmployee = Admin & Employee;
-
-const e1: ElevatedEmployee = {
-    name: 'Antonio',
-    privileges: ['do-stuff'],
-    startDate: new Date()
-}
-
-type Combinable = number | string;
-type Numeric = boolean | number;
-
-type Universal = Combinable & Numeric // This ends up being number
-
-// ------------------------------------
-
-//  type guards
-function add (a: number | string, b: number | string) {
-    if(typeof a === 'string' || typeof b === 'string'){   // This here is a type guard
-        return a.toString() + b.toString();
-    }
-    return a + b;
-}
-
-type UnknownEmployee = Admin | Employee;
-
-function printEmployeeInformation(emp: UnknownEmployee) {
-    console.log('Name: ' + emp.name);
-
-    if('privileges' in emp){
-        console.log('Privileges: ' + emp.privileges);
+function countAndDescribe<T extends Lengthy>(element: T): [T, string] {
+    let description = 'Got no value.'
+    if (element.length === 1) {
+        description = 'Got 1 element.';
+    } else if (element.length > 1) {
+        description = ' Got ' + element.length + ' elements.';
     }
 
-    if('startDate' in emp) {
-        console.log('Start date: ' + emp.startDate);
-    }
+    return [element, description];
 }
 
-printEmployeeInformation(e1);
-printEmployeeInformation({name: 'Barbie', startDate: new Date()});
+console.log(countAndDescribe('Que pex!'));
+console.log(countAndDescribe(['papa', 'mama', 2]))
+console.log(countAndDescribe([]))
 
-class Car {
-    drive() {
-        console.log('Driving...');
-    }
+
+// cool key of constraint
+function  extractAndConvert<T extends object, U extends keyof T>(obj: T, key: U){
+    return 'Value ' + obj[key];
 }
 
-class Truck {
-    drive() {
-        console.log('Driving a truck...');
+console.log(extractAndConvert({'name': 'tu mama'}, 'name'));
+
+class DataStorage<T extends string | number | boolean> {
+    private data: T[] = [];
+
+    addItem(item: T) {
+        this.data.push(item);
     }
 
-    loadCargo(load : number) {
-        console.log('Loading cargo ' + load);
+    removeItem(item: T){
+        if(this.data.indexOf(item) === -1) {
+            return;
+        }
+        this.data.splice(this.data.indexOf(item), 1);
     }
-}
 
-const v1 = new Car();
-const v2 = new Truck();
-
-type Vehicle = Car | Truck
-
-function useVehicle(vehicle: Vehicle){
-    vehicle.drive();
-    if(vehicle instanceof Truck){
-        vehicle.loadCargo(1000);
+    getItems(){
+        return[...this.data];
     }
 }
 
-useVehicle(v1);
-useVehicle(v2);
-// ------------------------------------
+const textStorage = new DataStorage<string>();
+textStorage.addItem('Antonio');
+textStorage.addItem('Barbie');
+textStorage.removeItem('Antonio');
+console.log(textStorage.getItems());
 
-// Union discrimination
-// It is a coding pattern
-
-interface Bird {
-    kind: 'bird';
-    flyingSpeed: number;
+interface courseGoal {
+    title: string;
+    description: string;
+    completeUntil: Date;
 }
 
-interface Horse {
-    kind: 'horse'
-    runningSpeed: number;
+function createCourseGoal(
+    title: string,
+    description: string,
+    date: Date
+) : courseGoal {
+    // Partial allows us to allocate an object variable without all its properties
+    let course: Partial<courseGoal> = {}
+    course.title = title;
+    course.description = description;
+    course.completeUntil = date;
+    return course as courseGoal;
 }
 
-type Animal = Bird | Horse
-
-function printSpeed(animal: Animal) {
-    let speed: Number;
-
-    switch(animal.kind) {
-        case 'bird':
-            speed = animal.flyingSpeed;
-            break;
-        case 'horse':
-            speed = animal.runningSpeed;
-            break;
-    }
-
-    console.log('Moving at speed: ' + speed + 'MpH');
-}
-
-printSpeed({kind: 'bird', flyingSpeed: 30});
-printSpeed({kind: 'horse', runningSpeed: 10});
-
-// ------------------------------------
-
-// Type casting
-// const userInput = <HTMLInputElement>document.getElementById('user-input')!;
-// const userInput = document.getElementById('user-input') as HTMLInputElement;
-const userInput = document.getElementById('user-input');
-
-(userInput as HTMLInputElement).value = 'Hello humanoid';
-// ------------------------------------
+const names: Readonly<string[]> = ['Antonio', 'Barbara', 'Victoria'];
+// names.push('Lalo');
+console.log(names[0])

@@ -1,63 +1,56 @@
 "use strict";
-const e1 = {
-    name: 'Antonio',
-    privileges: ['do-stuff'],
-    startDate: new Date()
-};
-function add(a, b) {
-    if (typeof a === 'string' || typeof b === 'string') {
-        return a.toString() + b.toString();
-    }
-    return a + b;
+function merge(obj1, obj2) {
+    return Object.assign(obj1, obj2);
 }
-function printEmployeeInformation(emp) {
-    console.log('Name: ' + emp.name);
-    if ('privileges' in emp) {
-        console.log('Privileges: ' + emp.privileges);
+const mergeObj = merge({ name: 'Antonio', hobbies: ['books'] }, { age: 34 });
+console.log(mergeObj);
+console.log(mergeObj.age);
+function countAndDescribe(element) {
+    let description = 'Got no value.';
+    if (element.length === 1) {
+        description = 'Got 1 element.';
     }
-    if ('startDate' in emp) {
-        console.log('Start date: ' + emp.startDate);
+    else if (element.length > 1) {
+        description = ' Got ' + element.length + ' elements.';
     }
+    return [element, description];
 }
-printEmployeeInformation(e1);
-printEmployeeInformation({ name: 'Barbie', startDate: new Date() });
-class Car {
-    drive() {
-        console.log('Driving...');
-    }
+console.log(countAndDescribe('Que pex!'));
+console.log(countAndDescribe(['papa', 'mama', 2]));
+console.log(countAndDescribe([]));
+function extractAndConvert(obj, key) {
+    return 'Value ' + obj[key];
 }
-class Truck {
-    drive() {
-        console.log('Driving a truck...');
+console.log(extractAndConvert({ 'name': 'tu mama' }, 'name'));
+class DataStorage {
+    constructor() {
+        this.data = [];
     }
-    loadCargo(load) {
-        console.log('Loading cargo ' + load);
+    addItem(item) {
+        this.data.push(item);
     }
-}
-const v1 = new Car();
-const v2 = new Truck();
-function useVehicle(vehicle) {
-    vehicle.drive();
-    if (vehicle instanceof Truck) {
-        vehicle.loadCargo(1000);
+    removeItem(item) {
+        if (this.data.indexOf(item) === -1) {
+            return;
+        }
+        this.data.splice(this.data.indexOf(item), 1);
+    }
+    getItems() {
+        return [...this.data];
     }
 }
-useVehicle(v1);
-useVehicle(v2);
-function printSpeed(animal) {
-    let speed;
-    switch (animal.kind) {
-        case 'bird':
-            speed = animal.flyingSpeed;
-            break;
-        case 'horse':
-            speed = animal.runningSpeed;
-            break;
-    }
-    console.log('Moving at speed: ' + speed + 'MpH');
+const textStorage = new DataStorage();
+textStorage.addItem('Antonio');
+textStorage.addItem('Barbie');
+textStorage.removeItem('Antonio');
+console.log(textStorage.getItems());
+function createCourseGoal(title, description, date) {
+    let course = {};
+    course.title = title;
+    course.description = description;
+    course.completeUntil = date;
+    return course;
 }
-printSpeed({ kind: 'bird', flyingSpeed: 30 });
-printSpeed({ kind: 'horse', runningSpeed: 10 });
-const userInput = document.getElementById('user-input');
-userInput.value = 'Hello humanoid';
+const names = ['Antonio', 'Barbara', 'Victoria'];
+console.log(names[0]);
 //# sourceMappingURL=app.js.map
